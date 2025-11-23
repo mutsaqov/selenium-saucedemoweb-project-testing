@@ -60,8 +60,8 @@ The execution results are automatically saved in HTML format within the Report_T
 
 ### 🗺️ Project Roadmap & Features to be Implemented
 The following features are planned for automation coverage in this project:
-1. Login (Positive and Negative cases)
-2. Inventory list page
+1. Login (Positive and Negative cases) ✅ **[COMPLETED]** ✅
+2. Inventory list page ⏳ **[On The Way]** ⏳
 3. Product details
 4. Checkout item
 5. Cart
