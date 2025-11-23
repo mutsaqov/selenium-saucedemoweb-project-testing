@@ -1,0 +1,13 @@
+# File Python yang diabaikan secara umum
+__pycache__/
+*.pyc
+
+# Virtual Environment (penting!)
+venv/
+.venv/
+
+# Cache WebDriver Manager
+.wdm/
+
+# Laporan HTML (Hasil run)
+*.log

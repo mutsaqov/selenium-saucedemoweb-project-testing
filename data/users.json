@@ -1,0 +1,21 @@
+{
+    "positive_cases": [
+        {
+            "username": "standard_user",
+            "password": "secret_sauce",
+            "expected_url_part": "inventory.html"
+        }
+    ],
+    "negative_cases": [
+        {
+            "username": "locked_out_user",
+            "password": "secret_sauce",
+            "expected_error": "Sorry, this user has been locked out."
+        },
+        {
+            "username": "teserrac",
+            "password": "secret_sauce",
+            "expected_error": "Username and password do not match any user in this service"
+        }
+    ]
+}
