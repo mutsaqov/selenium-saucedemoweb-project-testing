@@ -13,7 +13,7 @@ The following features are planned for automation coverage in this project:
 4. Checkout item
 5. Cart
 6. Logout
-7. (Additional) Filtering and Sorting Items
+7. (Additional) Filtering and Sorting Items ✅ **[COMPLETED]** ✅
 
 ---
 
@@ -39,7 +39,8 @@ pip install selenium html-testrunner webdriver-manager
 ---
 
 ### 📂 Project Structure (Page Object Model)
-### LOGIN PAGE
+
+### 📦 Feature 1: Login Functionality
 The project utilizes the POM architecture to separate logic and improve maintainability:
 
 
@@ -48,7 +49,19 @@ The project utilizes the POM architecture to separate logic and improve maintain
 | `pages/` | Contains all Page Object Classes (Locators and Actions). Example: `login_page.py` . |
 | `tests/` | Contains the Test Cases (Scenarios and Assertions). Example: `test_login_page.py` . |
 | `README.md` | This project documentation file. |
+| `Report_Test/` | Contains the generated HTML Test Reports. |
 
+
+This module covers the authentication process, including positive logins and handling various error states.
+📋 Login Test Scenarios (tests/test_login.py)
+
+| Test Case ID | Scenario | Description & Validation |
+| :--- | :--- | :--- |
+| **TC-01** | Valid Login | Verify successful login with valid standard_user credentials. |
+| **TC-02** | Locked Out User | Verify error message when logging in with locked_out_user. |
+| **TC-03** | Invalid Password/username | Verify error message when the password/username is incorrect. |
+| **TC-04** | Empty Password Fields | Verify error message when the password fields is empty and hit Login button. |
+| **TC-05** | Empty Password and Username Fields | Verify error message when the password and username fields is empty and hit Login button. |
 
 ### 🚀 How to Run Tests
 Execute all test scenarios from your VS Code terminal while in the root project directory:
@@ -75,6 +88,9 @@ This module handles the main product listing page, covering comprehensive test s
 | **TC-04** | Product Sorting | Validates all 4 sorting options (A-Z, Z-A, Low-High, High-Low) using **Dictionary Mapping**. |
 | **TC-05** | Cart Navigation | Verifies that clicking the cart icon correctly redirects to `cart.html`. |
 | **TC-06** | Sidebar Menu | Verifies that the Burger Menu is clickable and opens the sidebar. |
+| **TC-07** | Product List | Verifies item content (Images not broken, descriptions not showing HTML/Code, title not showing HTML/Code, and Price)  |
+| **TC-08** | Product List | Verifies user can click product images and redirect to product details  |
+| **TC-09** | Product List | Verifies user can click product title and redirect to product details  |
 
 ### 🧠 Key Technical Implementations
 
@@ -92,7 +108,40 @@ This feature implements several **Advanced Selenium** techniques:
 3.  **Dropdown Handling:**
     Using Selenium's `Select` class to interact with and validate the product sorting dropdown menu.
 
+3.  **Regex (Regular Expression) Validation:**
+    Used in INV-07 to detect data leaks. The script scans product descriptions and titles for HTML tags (<.*?>) or function calls (e.g., test.allTheThings()), marking them as defects if found.
+
+4. **JavaScript Executor:**
+    Used to validate images. Instead of just checking if the element exists, we use JS (return arguments[0].naturalWidth > 0) to ensure the image is actually rendered by the browser.
+
+5. **Dynamic XPath Locator:**
+    A strategy to locate "Add to Cart" buttons based on the product name without hardcoding IDs.
+
+```bash
+f"//div[text()='{item_name}']/ancestor::div[@class='inventory_item']//button"
+```
+
+6. **Soft Assertion Logic:**
+    In Content Validation, the script collects all errors found in a list (errors.append) instead of stopping at the first failure. This allows checking 6 products in one go and reporting multiple bugs simultaneously.
+
 ---
+
+---
+
+🐛 Known Issues & Bugs Found
+During the execution of automated tests (specifically INV-07), the script successfully caught the following defects on the demo website:
+
+
+| Bug Type | Product Name | Description |
+| :--- | :--- | :--- |
+| **Data Leak** | Test.allTheThings() T-Shirt | Product description contains raw HTML tags/code logic. |
+| **UI Formatting** | Test.allTheThings() T-Shirt | Title displays function-like syntax, inconsistent with other products. |
+
+
+**Note:** The test INV-07 is expected to FAIL to highlight these defects.
+
+---
+
 
 ---
 

@@ -1,6 +1,6 @@
 import unittest
 from selenium import webdriver
-import HtmlTestRunner
+import pytest
 import sys
 import os
 # Trik agar Python bisa membaca folder 'pages' (kadang error path di Windows)
@@ -10,6 +10,7 @@ from tests.base_test import BaseTest
 import json
 import os
 from ddt import ddt, data
+
 
 # --- HELPER FUNCTION JSON ---
 def load_testdata(case_type):
@@ -34,7 +35,9 @@ class TestLoginSeparated(BaseTest):
         
     # 1. --- POSITIVE CASE FUNCTION ---
     @data(*load_testdata('positive_cases')) #<--- CALL Helper Function
+
     def test_01_positive_login(self, data_set):
+        """LGN-01: Verify successful login with valid standard_user credentials. """
         #Get the value, since data entry as a single dictionary
         username = data_set['username']
         password = data_set['password']
@@ -51,7 +54,12 @@ class TestLoginSeparated(BaseTest):
 
     # 2. --- NEGATIVE CASE FUNCTION ---
     @data(*load_testdata('negative_cases'))#<--- CALL Helper Function
+
     def test_02_negative_login(self, data_set):
+        """LGN-02,03,04: Verify error message when logging in with locked_out_user, 
+        invalid username/password 
+        and empty field checking
+        """
         #Get the value, since data entry as a single dictionary
         username = data_set['username']
         password = data_set['password']
@@ -67,19 +75,24 @@ class TestLoginSeparated(BaseTest):
                     f"Failed: Incorrect Error Message. Expectation: {expected_error}")
         print("Success!!")
 
+    def test_03_failed_login_empty(self):
+        """LGN-05: Verify error message when logging in with locked_out_user and invalid username/password """
+        self.login_page.click_loginbtn()
+        error_text = self.login_page.get_error_message()
+
+        expected_msg = "Epic sadface: Username is required"
+        self.assertEqual(error_text, expected_msg, f"Failed: Incorrect Error Message. Got {error_text}")
+
+# --- (AUTO RUNNER) ---
 if __name__ == "__main__":
 
-    #1. Create test suites
-    suite = unittest.TestSuite()
-    #2. import class test into suites
-    loader = unittest.TestLoader()
-    suite.addTests(loader.loadTestsFromTestCase(TestLoginSeparated))
-    #3. running html tesrunner
-    runner = HtmlTestRunner.HTMLTestRunner(
-        output= 'Report_Test',
-        report_name= 'report_saucedemoweb_login',
-        report_title= 'Automation Report Login Page',
-        combine_reports=True,
-        add_timestamp=True
-    )
-    runner.run(suite)
+    # pytest options
+    pytest_args = [
+        __file__,                                  # running this file
+        "--html=Report_Test/Report_Login.html", # HTML Report to this folder
+        "--self-contained-html",                   
+        "-v"                                       
+    ]
+
+    print("Running...")
+    pytest.main(pytest_args)

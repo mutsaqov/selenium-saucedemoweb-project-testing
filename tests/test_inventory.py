@@ -4,8 +4,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from pages.inventory_page import sauceDemoInventoryPage
 from tests.base_test import BaseTestLoggedIn
-import HtmlTestRunner
-
+import re #<< for checking HTML logic
+import pytest
 
 class TestSauceDemoInventory(BaseTestLoggedIn):
     def setUp(self):
@@ -122,19 +122,72 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
         pass
 
 
+    def test_7_validate_item_content(self):
+        """Case7: Verified image, descriptions (without HTML code leak), Title(without HTML code leak), and Price"""
+
+        print("In progress checking all items...")
+        all_items = self.inventory_page.get_all_items_data()
+        errors = [] #Error Buffer (Soft Assertion)
+
+        # Regex patterns for capturing leaked HTML or code
+        # 1. <.*?>          : Captures any HTML tag (e.g., <div>, <br>, <b>)
+        # 2. function\(\)   : Captures the text “function()”
+        # 3. \(\)           : Captures empty parentheses “()” that often appear in method code
+        # 4. Test\.all      : Captures specific text “Test.allTheThings” (a known bug)
+        bad_patterns = [r"<.*?>", r"function\(\)", r"\(\)", r"Test\.all"]
+
+        for index, item in enumerate(all_items):
+            print(f"Checking Items {index+1}: {item['name']}...")
+
+            #First, validate images not broken
+            if not self.inventory_page.check_image_loaded(item['image_element']):
+                errors.append(f"FAILED: Images broken for items '{item['name']}'")
+
+            #Second, validate price must be show and had "$" symbols
+            if "$" not in item['prices']:
+                errors.append(f"FAILED: Incorrect Price Format on the '{item['name']}': {item['prices']}")
+            
+            #Third and Fourth, Validate the content (Title and Descriptions)
+            #Looping pattern for checking two fields in one run
+            for pattern in bad_patterns:
+                #Description Checking
+                if re.search(pattern, item['descriptions']):
+                    errors.append(f"BUG FOUND: HTML/Code show in descriptions '{item['name']}', {item['descriptions']}")
+                
+                #Title Checking
+                if re.search(pattern, item['name']):
+                    errors.append(f"BUG FOUND: HTML/Code show in descriptions '{item['name']}'")
+        
+        #FINAL ASSERTIONS
+        if errors:
+            print("\n=======BUG FOUND=======")
+            for err in set(errors):
+                print(err)
+            print("=========================")
+            self.fail(f"FAILED TEST! Because {len(errors)} Problems in the UI")
+
+
+    def test_8_click_image(self):
+        """Case8: Validate if user clicking image it will redirect to product/item details"""
+        print("Clicking first product image...")
+        self.inventory_page.click_item_image_by_index(0)
+        self.assertIn("inventory-item.html", self.driver.current_url, "FAILED/INCORRECT NAVIGATION")
+
+    def test_9_click_title(self):
+        """Case9: Validate if user clicking title it will redirect to product/item details"""
+        self.inventory_page.click_item_title_by_index(0)
+        self.assertIn("inventory-item.html", self.driver.current_url, "FAILED/INCORRECT NAVIGATION")
+
+# --- (AUTO RUNNER) ---
 if __name__ == "__main__":
 
-    #1. Create test suites
-    suite = unittest.TestSuite()
-    #2. import class test into suites
-    loader = unittest.TestLoader()
-    suite.addTests(loader.loadTestsFromTestCase(TestSauceDemoInventory))
-    #3. running html tesrunner
-    runner = HtmlTestRunner.HTMLTestRunner(
-        output= 'Report_Test',
-        report_name= 'report_saucedemoweb_inventorypage',
-        report_title= 'Automation Report Inventory Page',
-        combine_reports=True,
-        add_timestamp=True
-    )
-    runner.run(suite)
+    # pytest options
+    pytest_args = [
+        __file__,                                  # running this file
+        "--html=Report_Test/Report_Inventory.html", # HTML Report to this folder
+        "--self-contained-html",                   
+        "-v"                                       
+    ]
+
+    print("Running...")
+    pytest.main(pytest_args)

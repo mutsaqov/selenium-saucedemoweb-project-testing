@@ -6,17 +6,22 @@ from selenium.webdriver.support.ui import Select
 class sauceDemoInventoryPage:
 
     #LOCATORS
-    PAGE_TITLE = (By.CLASS_NAME, "title")
+    PAGE_TITLE              = (By.CLASS_NAME, "title")
 
-    OPEN_SIDEBAR_MENU = (By.ID, "react-burger-menu-btn")
-    CLOSE_SIDEBAR_MENU  = (By.ID, "react-burger-cross-btn")
+    OPEN_SIDEBAR_MENU       = (By.ID, "react-burger-menu-btn")
+    CLOSE_SIDEBAR_MENU      = (By.ID, "react-burger-cross-btn")
 
-    PRODUCT_SORTING = (By.CLASS_NAME, "product_sort_container")
-    SHOPPING_CART = (By.CLASS_NAME, "shopping_cart_link")
-    SHOPPING_CART_BADGE = (By.CLASS_NAME, "shopping_cart_badge")
+    PRODUCT_SORTING         = (By.CLASS_NAME, "product_sort_container")
+    SHOPPING_CART           = (By.CLASS_NAME, "shopping_cart_link")
+    SHOPPING_CART_BADGE     = (By.CLASS_NAME, "shopping_cart_badge")
 
-    INVENTORY_ITEMS = (By.CLASS_NAME, "inventory_item")
+    INVENTORY_ITEMS         = (By.CLASS_NAME, "inventory_item")
     ALL_ADD_TO_CART_BUTTONS = (By.CSS_SELECTOR, "button.btn_inventory") #<-- Locator for all button add to card
+
+    ITEM_IMAGES             = (By.CSS_SELECTOR, "img.inventory_item_img")
+    ITEM_NAMES              = (By.CLASS_NAME, "inventory_item_name ")
+    ITEM_DESCRIPTIONS       = (By.CLASS_NAME, "inventory_item_desc")
+    ITEM_PRICE              = (By.CLASS_NAME, "inventory_item_price")
 
     #CONSTRUCTOR
     def __init__(self, driver):
@@ -75,3 +80,52 @@ class sauceDemoInventoryPage:
         else:
             raise Exception(f"Item index {index} not found!")
         
+    def get_all_items_data(self):
+        """
+        Get all items data (Title, Description, Price, and Image) in one loop
+        RETURN: LIST OF DICTIONARIES
+        """
+        # FIND_ELEMENTS (Bulk/Plural) -> Returning LIST
+        # names = [Element_Title_1, Element_Title_2, Element_Title_3, ...]
+        items = self.wait.until(EC.visibility_of_all_elements_located(self.INVENTORY_ITEMS))
+        names = self.driver.find_elements(*self.ITEM_NAMES)
+        descriptions = self.driver.find_elements(*self.ITEM_DESCRIPTIONS)
+        prices = self.driver.find_elements(*self.ITEM_PRICE)
+        images = self.driver.find_elements(*self.ITEM_IMAGES)
+        
+        results = []
+
+        #looping as many times as the number of items
+        for i in range(len(names)):
+            data = {
+                "name": names[i].text,
+                "descriptions": descriptions[i].text,
+                "prices": prices[i].text,
+                "image_element": images[i], # Save images element for checking later
+                "name_element": images[i] #Save name element for click actions
+            }
+            results.append(data)
+
+        return results
+    
+    def check_image_loaded(self, image_element):
+        """
+        Check are all images broken or not using java script
+        RETURN: True if all images is good
+        """
+        return self.driver.execute_script(
+            "return arguments[0].complete && typeof arguments[0].naturalWidth != 'undefined' && arguments[0].naturalWidth > 0",
+            image_element
+        )
+    
+    def click_item_image_by_index(self, index):
+        """Click on the product images in order """
+        images = self.wait.until(EC.visibility_of_all_elements_located(self.ITEM_IMAGES))
+        #Choose one of them based on order number (index)
+        images[index].click()
+    
+    def click_item_title_by_index(self, index):
+        """Click on the product titles in order"""
+        title = self.wait.until(EC.visibility_of_all_elements_located(self.ITEM_NAMES))
+        title[index].click()
+

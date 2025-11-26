@@ -8,7 +8,7 @@ class sauceDemoLoginPage:
     USERNAME_INPUT = (By.ID, "user-name")
     PASSWORD_INPUT = (By.ID, "password")
     LOGIN_BUTTON = (By.ID, "login-button")
-    ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "h3[data-test='error']")
 
     #CONSTRUCTOR
     def __init__(self, driver):
@@ -37,3 +37,4 @@ class sauceDemoLoginPage:
     def get_error_message(self):
         elemen = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
         return elemen.text
+    

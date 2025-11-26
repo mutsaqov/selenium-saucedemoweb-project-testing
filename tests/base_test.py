@@ -18,7 +18,8 @@ class BaseTest(unittest.TestCase):
         prefs = {
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
-            "safebrowsing.enabled": False # Turn Off safebrowsing
+            "safebrowsing.enabled": False, # Turn Off safebrowsing
+            "profile.default_content_setting_values.notifications": 2 # Blokir notifikasi
         }
         options.add_experimental_option("prefs", prefs)  
 
