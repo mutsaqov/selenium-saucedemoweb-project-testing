@@ -63,13 +63,6 @@ This module covers the authentication process, including positive logins and han
 | **TC-04** | Empty Password Fields | Verify error message when the password fields is empty and hit Login button. |
 | **TC-05** | Empty Password and Username Fields | Verify error message when the password and username fields is empty and hit Login button. |
 
-### 🚀 How to Run Tests
-Execute all test scenarios from your VS Code terminal while in the root project directory:
-
-```bash
-python tests/test_login_page.py
-```
-
 ---
 
 ---
@@ -142,6 +135,24 @@ During the execution of automated tests (specifically INV-07), the script succes
 
 ---
 
+---
+
+### 🚀 How to Run Tests
+Execute all test scenarios from your VS Code terminal while in the root project directory:
+
+For login page test:
+
+```bash
+python tests/test_login_page.py
+```
+
+For Inventory page test:
+
+```bash
+python tests/test_inventory.py
+```
+
+---
 
 ---
 
