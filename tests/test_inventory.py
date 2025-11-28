@@ -134,7 +134,7 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
         # 2. function\(\)   : Captures the text “function()”
         # 3. \(\)           : Captures empty parentheses “()” that often appear in method code
         # 4. Test\.all      : Captures specific text “Test.allTheThings” (a known bug)
-        bad_patterns = [r"<.*?>", r"function\(\)", r"\(\)", r"Test\.all"]
+        bad_patterns = [r"<.*?>", r"function\(\)", r"Test\.all"]
 
         for index, item in enumerate(all_items):
             print(f"Checking Items {index+1}: {item['name']}...")

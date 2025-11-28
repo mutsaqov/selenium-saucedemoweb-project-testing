@@ -19,7 +19,7 @@ class sauceDemoInventoryPage:
     ALL_ADD_TO_CART_BUTTONS = (By.CSS_SELECTOR, "button.btn_inventory") #<-- Locator for all button add to card
 
     ITEM_IMAGES             = (By.CSS_SELECTOR, "img.inventory_item_img")
-    ITEM_NAMES              = (By.CLASS_NAME, "inventory_item_name ")
+    ITEM_NAMES              = (By.CLASS_NAME, "inventory_item_name")
     ITEM_DESCRIPTIONS       = (By.CLASS_NAME, "inventory_item_desc")
     ITEM_PRICE              = (By.CLASS_NAME, "inventory_item_price")
 
@@ -69,14 +69,26 @@ class sauceDemoInventoryPage:
         select = Select(element)
         return select.first_selected_option.text
 
+    
     def add_item_by_name(self, item_name):
         xpath_dynamic = f"//div[text()='{item_name}']/ancestor::div[@class='inventory_item']//button"
-        self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath_dynamic))).click()
+        btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath_dynamic)))
+        btn.click()
+        self.wait.until(EC.text_to_be_present_in_element((By.XPATH, xpath_dynamic), "Remove"))
     
     def add_item_by_index(self, index):
         buttons = self.wait.until(EC.visibility_of_all_elements_located(self.ALL_ADD_TO_CART_BUTTONS))
+
         if index < len(buttons):
-            buttons[index].click()
+            btn = buttons[index]
+            btn.click()
+            
+            def check_cart_text_updated(driver):
+                fresh_buttons = driver.find_elements(*self.ALL_ADD_TO_CART_BUTTONS)
+                return "Remove" in fresh_buttons[index].text
+            
+            self.wait.until(check_cart_text_updated)
+
         else:
             raise Exception(f"Item index {index} not found!")
         

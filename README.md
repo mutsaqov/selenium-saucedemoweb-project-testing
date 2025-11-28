@@ -137,6 +137,23 @@ During the execution of automated tests (specifically INV-07), the script succes
 
 ---
 
+📦 Feature 3: Product Detail Validation
+This module validates the detailed view of a product, ensuring UI consistency and cart functionality from within the item page.
+
+
+| Test Case ID | Scenario | Description & Validation |
+| :--- | :--- | :--- |
+| **TC-01** | Navigation to Detail | Verifies that clicking a product title on Inventory page correctly redirects to the Product Detail page. |
+| **TC-02** | UI Content Validation | Verifies that the detail page displays the correct Product Name, Description, Price, and Image. |
+| **TC-03** | Add & Remove Cart | Verifies the "Add to Cart" and "Remove" button logic, including button text changes and cart badge updates. |
+| **TC-04** | Back to Products | VVerifies that the "Back to products" button functions correctly and returns user to the inventory list. |
+
+
+---
+
+
+---
+
 ### 🚀 How to Run Tests
 Execute all test scenarios from your VS Code terminal while in the root project directory:
 
@@ -150,6 +167,12 @@ For Inventory page test:
 
 ```bash
 python tests/test_inventory.py
+```
+
+For Detail Product pages test:
+
+```bash
+python tests/test_product_detail.py
 ```
 
 ---

@@ -83,6 +83,8 @@ class TestLoginSeparated(BaseTest):
         expected_msg = "Epic sadface: Username is required"
         self.assertEqual(error_text, expected_msg, f"Failed: Incorrect Error Message. Got {error_text}")
 
+    
+
 # --- (AUTO RUNNER) ---
 if __name__ == "__main__":
 
