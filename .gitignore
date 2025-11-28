@@ -1,6 +1,9 @@
 # File Python yang diabaikan secara umum
 __pycache__/
 *.pyc
+.pytest_cache/
+screenshots/
+Report_Test/
 
 # Virtual Environment (penting!)
 venv/

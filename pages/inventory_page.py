@@ -128,4 +128,10 @@ class sauceDemoInventoryPage:
         """Click on the product titles in order"""
         title = self.wait.until(EC.visibility_of_all_elements_located(self.ITEM_NAMES))
         title[index].click()
+        
+    def get_item_name_by_index(self, index):
+        """Get item name by index without clicking"""
+        names = self.wait.until(EC.visibility_of_all_elements_located(self.ITEM_NAMES))
+        return names[index].text
+        
 

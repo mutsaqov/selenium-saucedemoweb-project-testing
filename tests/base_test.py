@@ -5,6 +5,8 @@ from datetime import datetime
 import sys
 import json
 from pages.login_page import sauceDemoLoginPage
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 ##---1: BASE TEST LOGGED IN---
 class BaseTest(unittest.TestCase):
@@ -27,11 +29,20 @@ class BaseTest(unittest.TestCase):
         options.add_argument("--disable-notifications")
         options.add_argument("--disable-popup-blocking")
         options.add_argument("--disable-save-password-bubble")
-
+        options.add_argument("--no-sandbox") 
+        options.add_argument("--disable-dev-shm-usage") 
+        
         # Remove bar "Chrome is being controlled by automated test software"
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
-        self.driver = webdriver.Chrome(options=options)
+        
+        try:
+            service = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=service, options=options)
+        except Exception as e:
+            print(f"Error saat start Chrome: {e}")
+            raise e
+    
         self.driver.maximize_window()
 
     # 2. Logika Screenshot on Failure
