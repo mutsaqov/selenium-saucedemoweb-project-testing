@@ -53,7 +53,8 @@ The project utilizes the POM architecture to separate logic and improve maintain
 
 
 This module covers the authentication process, including positive logins and handling various error states.
-📋 Login Test Scenarios (tests/test_login.py)
+
+## 📋 Login Test Scenarios (tests/test_login.py)
 
 | Test Case ID | Scenario | Description & Validation |
 | :--- | :--- | :--- |
@@ -67,11 +68,11 @@ This module covers the authentication process, including positive logins and han
 
 ---
 
-## 📦 Feature: Inventory & Product Management
+## 📦 Feature 2 : Inventory & Product Management
 
 This module handles the main product listing page, covering comprehensive test scenarios from UI validation to dynamic "Add to Cart" logic.
 
-### 📋 Positive Test Scenarios Covered (`tests/test_inventory.py`)
+### 📋 Test Scenarios Covered (`tests/test_inventory.py`)
 
 | Test Case ID | Scenario | Description & Validation |
 | :--- | :--- | :--- |
@@ -137,9 +138,11 @@ During the execution of automated tests (specifically INV-07), the script succes
 
 ---
 
-📦 Feature 3: Product Detail Validation
+## 📦 Feature 3: Product Detail Validation
+
 This module validates the detailed view of a product, ensuring UI consistency and cart functionality from within the item page.
 
+## 📋 Test Scenarios Covered (`tests/product_detail_test.py`)
 
 | Test Case ID | Scenario | Description & Validation |
 | :--- | :--- | :--- |
