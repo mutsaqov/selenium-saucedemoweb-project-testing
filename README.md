@@ -10,7 +10,7 @@ The following features are planned for automation coverage in this project:
 1. Login (Positive and Negative cases) ✅ **[COMPLETED]** ✅
 2. Inventory list page ✅ **[COMPLETED]** ✅
 3. Product details ✅ **[COMPLETED]** ✅
-4. Checkout item flow
+4. Checkout item flow ✅ **[COMPLETED]** ✅
 5. Cart ✅ **[COMPLETED]** ✅
 6. Logout
 7. (Additional) Filtering and Sorting Items ✅ **[COMPLETED]** ✅
@@ -40,8 +40,6 @@ pip install selenium webdriver-manager pytest pytest-html ddt
 3. pytest: The testing framework/runner used to execute the tests.
 4. pytest-html: Plugin to generate the HTML test reports.
 5. ddt: (Data-Driven Tests) Required for the Login Page test scenarios.
-
----
 
 ---
 
@@ -175,9 +173,9 @@ This feature implements several **Advanced Selenium** techniques:
 5. **Dynamic XPath Locator:**
     A strategy to locate "Add to Cart" buttons based on the product name without hardcoding IDs.
 
-```bash
-f"//div[text()='{item_name}']/ancestor::div[@class='inventory_item']//button"
-```
+    ```bash
+    f"//div[text()='{item_name}']/ancestor::div[@class='inventory_item']//button"
+    ```
 
 6. **Soft Assertion Logic:**
     In Content Validation, the script collects all errors found in a list (errors.append) instead of stopping at the first failure. This allows checking 6 products in one go and reporting multiple bugs simultaneously.
@@ -276,36 +274,103 @@ For the Cart feature, I implemented several advanced automation patterns to ensu
 
 **Note:** Above is known issues, the expected behavior from QA pov is > the Checkout button must be disabled or not show if user doesn't have any list on the cart menu's.
 
+---
 
 ---
 
-## 🚀 How to Run Tests
+## 📦 Feature 5: Checkout Page Flow Until Success (`tests/test_checkout.py`)
+
+This module covers the critical path of the e-commerce transaction, starting from user information input, order overview, validation of mathematical calculations (Tax & Total), until the final order completion.
+
+
+| Test Case ID | Scenario | Description & Validation |
+| :--- | :--- | :--- |
+| **TC-01** | Access Checkout Info | Verify user is redirected to `checkout-step-one.html` and Page Title is correct. |
+| **TC-02** | UI Visibility | Verify First Name, Last Name, Zip Code fields, and Buttons are visible. |
+| **TC-03** | Page Title Validation | Ensure the page title strictly displays "Checkout: Your Information". |
+| **TC-04** | Valid Information Input | Positive: User can successfully fill in the form with data from `users.json`. |
+| **TC-05** | [NEGATIVE CASE] Empty First Name | Verify error "Error: First Name is required" appears. |
+| **TC-06** | [NEGATIVE CASE] Empty Last Name | Verify error "Error: Last Name is required" appears. |
+| **TC-07** | [NEGATIVE CASE] Empty Postal Code | Verify error "Error: Postal Code is required" appears. |
+| **TC-08** | [NEGATIVE CASE] Priority Error Check | If all fields are empty, verify the system prioritizes the First Name error. |
+| **TC-09** | Cancel Navigation (From Your Information Page) | Verify "Cancel" button redirects user back to the Cart page. |
+| **TC-10** | Continue to Overview | Verify "Continue" button redirects to `checkout-step-two.html` (Overview). |
+| **TC-11** | Math & Logic Validation | Verify that `Item Total` (Sum of prices), `Tax`, and `Total` match the calculated values. |
+| **TC-12** | Cancel Navigation (From Overview Page) | Verify "Cancel" on Overview page redirects to Cart (Currently fails/redirects to Inventory). |
+| **TC-13** | Finish Order | Verify "Finish" button leads to Complete page, shows "Thank you", and resets Cart Badge to 0. |
+
+
+
+### 🧠 Key Technical Implementations (Checkout Module)
+
+In this module, we introduced advanced logic to handle data calculation and bug reporting:
+
+1. **Mathematical Logic & Soft Assertions (Case 11)** Instead of hardcoding the expected price (e.g., "$32.39"), the script performs real-time calculation:
+    - **Step A:** Scrapes all item prices from the list and sums them up (`Item Total`).
+    - **Step B:** Compares the displayed Tax with the expected Tax from `users.json`.
+    - **Step C:** Calculates `Item Total + Tax` to verify the final `Total`.
+    - **Soft Assertion:** We use an `errors = []` list to collect ALL calculation mismatches found (Subtotal, Tax, or Total) before failing the test. This ensures we see the full picture of pricing errors in one run.
+
+2. **Data-Driven Form Filling** Input data for the checkout form is not hardcoded in the script. It is fetched dynamically from `data/users.json`:
+
+    ```python
+    self.checkout_page.fill_information(
+        self.user_data[0]['firstname'],
+        self.user_data[0]['lastname'],
+        self.user_data[0]['postalcode']
+    )
+    ```
+
+3. **Intentional Bug Reporting (Case 12)** We discovered that clicking "Cancel" on the Overview page incorrectly redirects to the Inventory page (expected: Cart).
+    - The script is designed to catch this specific behavior.
+    - If the bug occurs, it triggers `self.fail("ISSUE FOUND: ...")`, marking the test as FAILED in the report to alert the developer, rather than crashing the script.
+
+### 🐛 Known Issues & Bugs Found
+
+
+| Bug Type | Feature| Description |
+| :--- | :--- | :--- |
+| **Navigation Flow** | Checkout (Overview) | Clicking the "Cancel" button on the Checkout Overview page redirects the user to the Inventory Page (All Products), whereas the expected behavior is to return to the Cart Page. |
+
+
+**Note:** Above is known issues, the expected behavior from QA pov is > the Cancel button from Overview page must be redirect to Cart Page so it will consistent.
+
+---
+
+---
+
+### 🚀 How to Run Tests
 Execute all test scenarios from your VS Code terminal while in the root project directory:
 
-### For login page test:
+## For login page test:
 
 ```bash
 python tests/test_login_page.py
 ```
 
-### For Inventory page test:
+## For Inventory page test:
 
 ```bash
 python tests/test_inventory.py
 ```
 
-### For Detail Product page test:
+## For Detail Product page test:
 
 ```bash
 python tests/test_product_detail.py
 ```
 
-### For Cart page test:
+## For Cart page test:
 
 ```bash
 python tests/cart_test.py
 ```
 
+## For Checkout Flow test:
+
+```bash
+python tests/test_checkout.py
+```
 
 ---
 
@@ -324,10 +389,9 @@ The report uses the `--self-contained-html` argument, meaning the CSS and logs a
 ### 🚀 How to Run Test and get the report
 1. You can execute the tests directly from your VS Code terminal. << **Recommended way, you only run the test script and the report will automatically generated**
 2. Or Using Pytest Command You can also run it using standard pytest commands:
-
-```bash
-# Run with HTML Report generation
-pytest tests/test_cart.py --html=Report_Test/Report_Cart.html --self-contained-html
-```
+    ```bash
+    # Run with HTML Report generation
+    pytest tests/test_cart.py --html=Report_Test/Report_Cart.html --self-contained-html
+    ```
 
 ---

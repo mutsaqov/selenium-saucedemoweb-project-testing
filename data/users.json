@@ -20,7 +20,15 @@
         {
             "username": "standard_user",
             "password": "",
-            "expected_error": "Epic sadface: Password is required"
+            "expected_error": "Epic sadface: Password is requ,ired"
+        }
+    ],
+    "checkout_data": [
+        {
+            "firstname": "Tester",
+            "lastname": "John",
+            "postalcode": "123456",
+            "tax_value": 3.20
         }
     ]
 }
