@@ -184,7 +184,7 @@ if __name__ == "__main__":
     # pytest options
     pytest_args = [
         __file__,                                  # running this file
-        "--html=Report_Test/Report_Inventory.html", # HTML Report to this folder
+        "--html=Report_Test/Report_List_Product.html", # HTML Report to this folder
         "--self-contained-html",                   
         "-v"                                       
     ]
