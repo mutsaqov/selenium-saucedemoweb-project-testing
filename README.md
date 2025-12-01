@@ -9,7 +9,7 @@ This project implements an exploration of Automation Testing using **Selenium** 
 The following features are planned for automation coverage in this project:
 1. Login (Positive and Negative cases) ✅ **[COMPLETED]** ✅
 2. Inventory list page ✅ **[COMPLETED]** ✅
-3. Product details ⏳ **[On The Way]** ⏳
+3. Product details ✅ **[COMPLETED]** ✅
 4. Checkout item
 5. Cart
 6. Logout
