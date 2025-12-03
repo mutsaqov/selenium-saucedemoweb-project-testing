@@ -9,7 +9,6 @@ from pages.login_page import sauceDemoLoginPage
 from pages.inventory_page import sauceDemoInventoryPage
 from tests.base_test import BaseTest
 import json
-import os
 from ddt import ddt, data
 
 
@@ -32,7 +31,7 @@ class TestLoginSeparated(BaseTest):
         super().setUp()
         self.login_page = sauceDemoLoginPage(self.driver)
         self.login_page.open_page()
-        print("1. Open SauceDemo web...")
+        self.logger.info("Open SauceDemo web...")
         self.inventory_page = sauceDemoInventoryPage(self.driver)
         
     # 1. --- POSITIVE CASE FUNCTION ---
@@ -45,15 +44,23 @@ class TestLoginSeparated(BaseTest):
         password = data_set['password']
         expected_url_part = data_set['expected_url_part']
         
-        print(f"--- Running Positive Test: {username} ---")
+        self.logger.info(f"--- Running Positive Test: {username} ---")
         self.login_page.enter_username(username)
         self.login_page.enter_password(password)
         self.login_page.click_loginbtn()
-        #Verifikasi dengan assert
-        self.assertIn(expected_url_part, self.driver.current_url,
-                    f"Failed: Successfully login, but cannot move to the URL: {expected_url_part}")
-        print("Success!!")
-
+        
+        #Validation
+        self.logger.info("Validation Redirection URL...")
+        current_url = self.driver.current_url
+        
+        try:
+            self.assertIn(expected_url_part, current_url)
+            self.logger.info(f"SUCCESS: User successfully redirect to ' {current_url}'")
+        except AssertionError as e:
+            self.logger.error(f"FAILED: URL Mismatch. Expected '{expected_url_part}' in '{current_url}'")
+            raise e
+            
+            
     # 2. --- NEGATIVE CASE FUNCTION ---
     @data(*load_testdata('negative_cases'))#<--- CALL Helper Function
 
@@ -67,23 +74,35 @@ class TestLoginSeparated(BaseTest):
         password = data_set['password']
         expected_error = data_set['expected_error']
 
-        print(f"--- Running Negative Test: {username} ---")
+        self.logger.info(f"--- Running Negative Test: {username} ---")
         self.login_page.enter_username(username)
         self.login_page.enter_password(password)
         self.login_page.click_loginbtn()
-        #Verifikasi dengan assert
-        error_text = self.login_page.get_error_message()
-        self.assertIn(expected_error, error_text,
-                    f"Failed: Incorrect Error Message. Expectation: {expected_error}")
-        print("Success!!")
 
+        #Validation
+        self.logger.info("Validating error messages...")
+        actual_error = self.login_page.get_error_message()
+        
+        try:
+            self.assertIn(expected_error, actual_error)
+            self.logger.info(f"SUCCESS: Error message matches expectations: '{actual_error}'")
+        except AssertionError as e:
+            self.logger.error(f"FAILED: Error message mismatch. Expected '{expected_error}', Got '{actual_error}'")
+            raise e
+            
     def test_03_failed_login_empty(self):
-        """LGN-05: Verify error message when logging in with locked_out_user and invalid username/password """
+        """LGN-05: Verify error message when logging in whithout username/password """
+        self.logger.info("Scenario: Login with Empty Username & Password")
         self.login_page.click_loginbtn()
-        error_text = self.login_page.get_error_message()
-
+        actual_error_text = self.login_page.get_error_message()
         expected_msg = "Epic sadface: Username is required"
-        self.assertEqual(error_text, expected_msg, f"Failed: Incorrect Error Message. Got {error_text}")
+        
+        try:
+            self.assertEqual(actual_error_text, expected_msg)
+            self.logger.info("SUCCESS: Correct error message for empty fields displayed.")
+        except AssertionError as e:
+            self.logger.error(f"FAILED: Expected '{expected_msg}', Got '{actual_error_text}'")
+            raise e
 
 # --- (AUTO RUNNER) ---
 if __name__ == "__main__":
@@ -95,7 +114,5 @@ if __name__ == "__main__":
         "--self-contained-html",                   
         "-v"                                       
     ]
-
-    print("Running...")
     pytest.main(pytest_args)
     

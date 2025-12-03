@@ -11,21 +11,35 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
     def setUp(self):
         super().setUp()
         self.inventory_page = sauceDemoInventoryPage(self.driver)
+        self.logger.info("--- Inventory Page Test Started ---")
 
     def test_1_inventory_display(self):
         """Case1: Ensure that product page is show as usual"""
-        print("1. Title Page Checking...")
+        self.logger.info("1. Title Page Checking...")
+    
+        #Title Checking
         title = self.inventory_page.get_page_title()
-        self.assertEqual(title, "Products", "Incorrect Page Title")
+        try: 
+            self.assertEqual(title, "Products", "Incorrect Page Title")
+            self.logger.info(f"SUCCESS: Page title verified: '{title}'")
+        except AssertionError as e:
+            self.logger.error(f"FAILED: Expected title 'Products', Got '{title}")
+            raise e
 
-        print("2. Total Item on the list checking...")
+        #Checking item count
         item_count = self.inventory_page.get_inventory_count()
-        print(f"INFO: Found {item_count} items on inventory page.")
-        #Add assert to check test is success while the page is not null 
-        self.assertGreater(item_count, 0, "Error: Item List is null")
+        self.logger.info(f"INFO: Found {item_count} items on inventory page.")
+        try:
+            self.assertGreater(item_count, 0, "Error: Item List is null")
+            self.logger.info("SUCCESS: Inventory items loaded successfully.")
+        except AssertionError as e:
+            self.logger.error("FAILED: No items found on inventory page.")
+            raise e
 
     def test_2_add_item_by_name(self):
         """Case2: Add Specific items to cart"""
+        self.logger.info("Scenario: Add Specific Items by Name")
+        
         #list add items
         item_to_add = [ 
             "Sauce Labs Fleece Jacket",
@@ -35,11 +49,12 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
 
         #First ensure that cart is empty
         initial_cart_count = self.inventory_page.get_cart_badge_value()
-
+        self.logger.info(f"Initial Cart Count: {initial_cart_count}")
+        
         #Second looping to add 3 items
-        print(f"Adding {len(item_to_add)} items...")
+        self.logger.info(f"Adding {len(item_to_add)} items...")
         for item in item_to_add:
-            print(f"On process to add: {item}...")
+            self.logger.info(f"On process to add: {item}...")
             self.inventory_page.add_item_by_name(item)
 
         #Check value on the cart > must be increased
@@ -47,85 +62,99 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
         expected_total = initial_cart_count + len (item_to_add)
         actual_total = self.inventory_page.get_cart_badge_value()
 
-        print(f"INFO: Total in cart: {actual_total}")
+        self.logger.info(f"INFO: Total in cart: {actual_total}")
 
-        self.assertEqual(
-            actual_total,
-            expected_total,
-            f"FAILED! It should be {expected_total} items, but only {actual_total}"
-        )
-
+        try:
+            self.assertEqual(actual_total,expected_total)
+            self.logger.info(f"SUCCESS: Cart count match. Expected {expected_total}, Got {actual_total}")
+        except AssertionError as e:
+            self.logger.info(f"FAILED! Cart count mismatch. Expected {expected_total}, Got {actual_total}")
+            raise e
+        
     def test_3_add_item_by_index(self):
         """Case3: Adding the top 3 items (index 0,1,2) to cart"""
+        self.logger.info("Scenario: Add Items by Index (Top 3 items)")
         
         #First ensure that cart is empty
         initial_cart_count = self.inventory_page.get_cart_badge_value()
-
         #Second we want to get the top of 3 items
         item_count_to_add = 3
-        print(f"On Process to add: {item_count_to_add} items by Index")
         
         for i in range(item_count_to_add):
-            print(f"Adding item at index {i}...")
+            self.logger.info(f"Adding item at index {i}...")
             self.inventory_page.add_item_by_index(i)
         
         #Assert dynamic
         expected_total = initial_cart_count + item_count_to_add
         actual_total = self.inventory_page.get_cart_badge_value()
 
-        print(f"INFO: Total on cart: {actual_total}")
-        self.assertEqual(
-            actual_total,
-            expected_total,
-            f"FAILED! It should be {expected_total} items, but only {actual_total}"
-        )
-
+        try:
+            self.assertEqual(actual_total,expected_total)
+            self.logger.info(f"SUCCESS: Total on cart: {actual_total}")
+        except AssertionError as e:
+            self.logger.info(f"FAILED! Expected {expected_total} items, Got {actual_total}")
+            raise e
+        
     def test_4_sort_products(self):
         """Case4: Ensure that sorting can be used"""
+        self.logger.info("Scenario: Product Sorting Verification")
+        
         sort_options = {
             "za": "Name (Z to A)",
             "lohi": "Price (low to high)",
             "hilo": "Price (high to low)",
             "az": "Name (A to Z)"
         }
-        print(f"Start test {len(sort_options)} sorting options")
-
+        
         #Loop get value and expected text
         for value, expected_text in sort_options.items():
-            print(f"Sorting Test: {expected_text} ({value})...")
+            self.logger.info(f"Sorting Test: {expected_text} ({value})...")
             
-            #First, do sorting action
+            #Action
             self.inventory_page.product_sorting(value)
 
-            #second, validate: Is the text in dropdown, successfully change?
+            #Validation
             current_text = self.inventory_page.get_active_sort_option()
 
-            self.assertEqual(
-                current_text,
-                expected_text,
-                f"FAILED! Sorting {value} not active. It shows: {current_text}"
-            )
+            try:
+                self.assertEqual(current_text, expected_text)
+                self.logger.info(f"SUCCESS: Dropdown shows '{current_text}'")
+            except AssertionError as e:
+                self.logger.info(f"FAILED! Sorting {value} not active. It shows: {current_text}")
+                raise e
 
     def test_5_open_cart(self):
         """Case5: Verified when click cart icon, will redirect to cart page."""
-        print("Navigating to cart page....")
+        self.logger.info("Scenario: Open Cart Page")
+        
         self.inventory_page.click_cart_icon()
 
         #Assert to validate the URL
         current_url = self.driver.current_url
-        self.assertIn("cart.html", current_url, "Failed!")
+        
+        try:
+            self.assertIn("cart.html", current_url)
+            self.logger.info(f"SUCCESS: Redirected to Cart Page ({current_url})")
+        except AssertionError as e:
+            self.logger.error(f"FAILED: URL mismatch. Got {current_url}")
+            raise e
     
     def test_6_sidebar_menu(self):
         """Case6: Verified sidebar menu can clicked and opened"""
-        print("Opening Sidebar menu....")
-        self.inventory_page.click_sidebar_menu()
-        pass
+        self.logger.info("Scenario: Open Sidebar Menu")
+        
+        try:
+            self.inventory_page.click_sidebar_menu()
+            self.logger.info("PASSED: Sidebar menu clicked without error.")
+        except Exception as e:
+            self.logger.error(f"FAILED: Could not click sidebar menu. Error: {e}")
+            raise e
 
 
     def test_7_validate_item_content(self):
         """Case7: Verified image, descriptions (without HTML code leak), Title(without HTML code leak), and Price"""
-
-        print("In progress checking all items...")
+        self.logger.info("Scenario: Validate Item Content (Soft Assertion for Bugs)")
+        
         all_items = self.inventory_page.get_all_items_data()
         errors = [] #Error Buffer (Soft Assertion)
 
@@ -135,66 +164,90 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
         # 3. \(\)           : Captures empty parentheses “()” that often appear in method code
         # 4. Test\.all      : Captures specific text “Test.allTheThings” (a known bug)
         bad_patterns = [r"<.*?>", r"function\(\)", r"Test\.all"]
+        self.logger.info(f"Scanning {len(all_items)} items for UI/Data defects...")
 
         for index, item in enumerate(all_items):
-            print(f"Checking Items {index+1}: {item['name']}...")
-
-            #First, validate images not broken
+            #1. validate images not broken
             if not self.inventory_page.check_image_loaded(item['image_element']):
-                errors.append(f"FAILED: Images broken for items '{item['name']}'")
-
-            #Second, validate price must be show and had "$" symbols
+                message = f"FAILED: Images broken for items '{item['name']}'"
+                errors.append(message)
+                self.logger.warning(message)
+                
+            #2. validate price must be show and had "$" symbols
             if "$" not in item['prices']:
-                errors.append(f"FAILED: Incorrect Price Format on the '{item['name']}': {item['prices']}")
-            
-            #Third and Fourth, Validate the content (Title and Descriptions)
+                message = f"FAILED: Incorrect Price Format on the '{item['name']}': {item['prices']}"
+                errors.append(message)
+                self.logger.warning(message)
+                
+            #3 and 4. Validate the content (Title and Descriptions)
             #Looping pattern for checking two fields in one run
             for pattern in bad_patterns:
                 #Description Checking
                 if re.search(pattern, item['descriptions']):
-                    errors.append(f"BUG FOUND: HTML/Code show in descriptions '{item['name']}', {item['descriptions']}")
-                
+                    message = f"BUG FOUND: HTML/Code show in descriptions '{item['name']}', {item['descriptions']}"
+                    errors.append(message)
+                    self.logger.error(message)
+                    
                 #Title Checking
                 if re.search(pattern, item['name']):
-                    errors.append(f"BUG FOUND: HTML/Code show in descriptions '{item['name']}'")
-        
+                    message = f"BUG FOUND: HTML/Code show in descriptions '{item['name']}'"
+                    errors.append(message)
+                    self.logger.error(message)
+                    
         #FINAL ASSERTIONS
         if errors:
-            print("\n=======BUG FOUND=======")
-            for err in set(errors):
-                print(err)
-            print("=========================")
-            self.fail(f"FAILED TEST! Because {len(errors)} Problems in the UI")
+            self.logger.info("=====================================")
+            self.logger.error(f"TEST FAILED: Found {len(errors)} UI/Data Issues!")
+            self.logger.info("=====================================")
+            self.fail(f"FAILED TEST! {len(errors)} issues found. Check logs for details.")
+        else:
+            self.logger.info("PASSED: All product contents are valid.")
 
 
     def test_8_click_image(self):
         """Case8: Validate if user clicking image it will redirect to product/item details"""
-        print("Clicking first product image...")
+        self.logger.info("Scenario: Click Item Title Navigation")
         self.inventory_page.click_item_image_by_index(0)
-        self.assertIn("inventory-item.html", self.driver.current_url, "FAILED/INCORRECT NAVIGATION")
+        
+        try:
+            self.assertIn("inventory-item.html", self.driver.current_url)
+            self.logger.info("SUCCESS: Redirected to Product Details via Image.")
+        except AssertionError as e:
+            self.logger.error("FAILED: Did not redirected to details page.")
+            raise e
 
     def test_9_click_title(self):
         """Case9: Validate if user clicking title it will redirect to product/item details"""
-        self.inventory_page.click_item_title_by_index(0)
-        self.assertIn("inventory-item.html", self.driver.current_url, "FAILED/INCORRECT NAVIGATION")
+        self.logger.info("Scenario: Click Item Title Navigation")
         
+        self.inventory_page.click_item_title_by_index(0)
+        
+        try:
+            self.assertIn("inventory-item.html", self.driver.current_url)
+            self.logger.info("PASSED: Redirected to Product Details via Title.")
+        except AssertionError as e:
+            self.logger.error("FAILED: Did not redirect to details page.")
+            raise e
         
     def test_10_logout(self):
         """"Case10: Test Logout Functionality"""
+        self.logger.info("Scenario: Logout Flow")
+        
         self.inventory_page.click_sidebar_menu()
         self.inventory_page.click_logout()
         
         current_url = self.driver.current_url
-        print(f"INFO: Current URL after logout: {current_url}")
-        
-        self.assertNotIn("inventory.html", current_url, "FAILED: Still in inventory page")
-        
-        #Validate login button is showing in login page
         try:
+            self.assertNotIn("inventory.html", current_url)
+            # Validate login button is show
             self.driver.find_element(*self.login_page.LOGIN_BUTTON).is_displayed()
-            print("SUCCESS: Login button displayed.")
-        except:
-            self.fail("FAILED: Login button not found after logout.")
+            self.logger.info("PASSED: Successfully logged out and Login button is visible.")
+        except AssertionError as e:
+            self.logger.error("FAILED: Still in inventory page or Login button not found.")
+            raise e
+        except Exception as e:
+            self.logger.error(f"FAILED: Error during validation: {e}")
+            raise e
 
 # --- (AUTO RUNNER) ---
 if __name__ == "__main__":
@@ -206,6 +259,4 @@ if __name__ == "__main__":
         "--self-contained-html",                   
         "-v"                                       
     ]
-
-    print("Running...")
     pytest.main(pytest_args)

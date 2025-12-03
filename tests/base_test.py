@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import sys
 import json
+import logging
 from pages.login_page import sauceDemoLoginPage
 from selenium.webdriver.chrome.service import Service
 
@@ -12,6 +13,13 @@ class BaseTest(unittest.TestCase):
 
     # 1. Setup Driver (Manual Path)
     def setUp(self):
+        #Logging setup
+        self.config_logging()
+        self.logger.info("=====================================")
+        self.logger.info(f"STARTING TEST: {self._testMethodName}")
+        self.logger.info("=====================================")
+        
+        
         # 0. CHROME OPTIONS
         options = webdriver.ChromeOptions()
 
@@ -51,7 +59,7 @@ class BaseTest(unittest.TestCase):
             service = Service(driver_path)
             self.driver = webdriver.Chrome(service=service, options=options)
         except Exception as e:
-            print(f"Error saat start Chrome: {e}")
+            self.logger.info(f"Error saat start Chrome: {e}")
             raise e
     
         self.driver.maximize_window()
@@ -73,14 +81,39 @@ class BaseTest(unittest.TestCase):
             # AMBIL SCREENSHOT
             try:
                 self.driver.save_screenshot(file_name)
-                print(f"!! TEST FAILED: Screenshots saved on {file_name}")
+                self.logger.info(f"!! TEST FAILED: Screenshots saved on {file_name}")
             except:
-                print("Gagal mengambil screenshot (Browser mungkin sudah tertutup)")
+                self.logger.info("Gagal mengambil screenshot (Browser mungkin sudah tertutup)")
 
         try:
             self.driver.quit()
         except:
             pass
+        
+    #logging function
+    def config_logging(self):
+        #Creating logging folder
+        if not os.path.exists('Logs'):
+            os.makedirs('Logs')
+        
+        #Format log
+        log_formatter = logging.Formatter("%(asctime)s - %(levelname)s = %(message)s")
+        
+        #Logger Object
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.INFO)
+        
+        #Checking handler
+        if not self.logger.handlers:
+            #File handler
+            file_handler = logging.FileHandler("logs/automation_test.log")
+            file_handler.setFormatter(log_formatter)
+            self.logger.addHandler(file_handler)
+            
+            #Console Handler
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(log_formatter)
+            self.logger.addHandler(console_handler)
 
 ##---2: BASE TEST LOGGED IN (for all features after login)---
 class BaseTestLoggedIn(BaseTest):
@@ -96,7 +129,7 @@ class BaseTestLoggedIn(BaseTest):
             username = valid_user['username']
             password = valid_user['password']           
 
-        print(f"--- Running Positive Test: {username} ---")
+        self.logger.info(f"--- Running Positive Test: {username} ---")
         self.login_page = sauceDemoLoginPage(self.driver)
         self.login_page.open_page()
         self.login_page.enter_username(username)
