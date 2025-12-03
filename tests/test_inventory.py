@@ -177,6 +177,24 @@ class TestSauceDemoInventory(BaseTestLoggedIn):
         """Case9: Validate if user clicking title it will redirect to product/item details"""
         self.inventory_page.click_item_title_by_index(0)
         self.assertIn("inventory-item.html", self.driver.current_url, "FAILED/INCORRECT NAVIGATION")
+        
+        
+    def test_10_logout(self):
+        """"Case10: Test Logout Functionality"""
+        self.inventory_page.click_sidebar_menu()
+        self.inventory_page.click_logout()
+        
+        current_url = self.driver.current_url
+        print(f"INFO: Current URL after logout: {current_url}")
+        
+        self.assertNotIn("inventory.html", current_url, "FAILED: Still in inventory page")
+        
+        #Validate login button is showing in login page
+        try:
+            self.driver.find_element(*self.login_page.LOGIN_BUTTON).is_displayed()
+            print("SUCCESS: Login button displayed.")
+        except:
+            self.fail("FAILED: Login button not found after logout.")
 
 # --- (AUTO RUNNER) ---
 if __name__ == "__main__":

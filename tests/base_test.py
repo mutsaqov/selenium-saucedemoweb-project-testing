@@ -37,7 +37,6 @@ class BaseTest(unittest.TestCase):
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         
-        # --- PERUBAHAN UTAMA DISINI (MANUAL DRIVER) ---
         # Mencari file chromedriver.exe di folder utama project (satu level di atas folder tests)
         current_folder = os.path.dirname(os.path.abspath(__file__)) # Folder 'tests'
         project_root = os.path.dirname(current_folder)              # Folder Project Utama

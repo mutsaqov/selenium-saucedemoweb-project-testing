@@ -6,6 +6,7 @@ import os
 # Trik agar Python bisa membaca folder 'pages' (kadang error path di Windows)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from pages.login_page import sauceDemoLoginPage
+from pages.inventory_page import sauceDemoInventoryPage
 from tests.base_test import BaseTest
 import json
 import os
@@ -32,6 +33,7 @@ class TestLoginSeparated(BaseTest):
         self.login_page = sauceDemoLoginPage(self.driver)
         self.login_page.open_page()
         print("1. Open SauceDemo web...")
+        self.inventory_page = sauceDemoInventoryPage(self.driver)
         
     # 1. --- POSITIVE CASE FUNCTION ---
     @data(*load_testdata('positive_cases')) #<--- CALL Helper Function
@@ -83,8 +85,6 @@ class TestLoginSeparated(BaseTest):
         expected_msg = "Epic sadface: Username is required"
         self.assertEqual(error_text, expected_msg, f"Failed: Incorrect Error Message. Got {error_text}")
 
-    
-
 # --- (AUTO RUNNER) ---
 if __name__ == "__main__":
 
@@ -98,3 +98,4 @@ if __name__ == "__main__":
 
     print("Running...")
     pytest.main(pytest_args)
+    

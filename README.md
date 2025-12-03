@@ -10,9 +10,9 @@ The following features are planned for automation coverage in this project:
 1. Login (Positive and Negative cases) ✅ **[COMPLETED]** ✅
 2. Inventory list page ✅ **[COMPLETED]** ✅
 3. Product details ✅ **[COMPLETED]** ✅
-4. Checkout item
-5. Cart
-6. Logout
+4. Checkout item ✅ **[COMPLETED]** ✅
+5. Cart ✅ **[COMPLETED]** ✅
+6. Logout ✅ **[COMPLETED]** ✅
 7. (Additional) Filtering and Sorting Items ✅ **[COMPLETED]** ✅
 
 ---

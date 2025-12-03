@@ -22,6 +22,8 @@ class sauceDemoInventoryPage:
     ITEM_NAMES              = (By.CLASS_NAME, "inventory_item_name")
     ITEM_DESCRIPTIONS       = (By.CLASS_NAME, "inventory_item_desc")
     ITEM_PRICE              = (By.CLASS_NAME, "inventory_item_price")
+    
+    LOGOUT_BUTTON           = (By.ID, "logout_sidebar_link")
 
     #CONSTRUCTOR
     def __init__(self, driver):
@@ -146,4 +148,7 @@ class sauceDemoInventoryPage:
         names = self.wait.until(EC.visibility_of_all_elements_located(self.ITEM_NAMES))
         return names[index].text
         
-
+    def click_logout(self):
+        """Click logout from sidebar"""
+        logout_btn = self.wait.until(EC.element_to_be_clickable(self.LOGOUT_BUTTON))
+        logout_btn.click()
