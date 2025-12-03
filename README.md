@@ -408,6 +408,7 @@ This project has migrated from basic `print()` statements to a robust. This ensu
 2025-12-04 10:00:05 - INFO - Scenario: Validate Math Calculations
 2025-12-04 10:00:05 - ERROR - MATH ERROR: Sum 39.98 != Label 40.00
 2025-12-04 10:00:06 - INFO - TEST FAILED: Screenshot saved at screenshots/test_11_fail.png
+```
 
 ---
 
