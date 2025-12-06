@@ -7,6 +7,7 @@ import json
 import logging
 from pages.login_page import sauceDemoLoginPage
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 ##---1: BASE TEST LOGGED IN---
 class BaseTest(unittest.TestCase):
@@ -56,18 +57,16 @@ class BaseTest(unittest.TestCase):
         driver_path = os.path.join(project_root, "chromedriver.exe")
 
         # Cek apakah file driver benar-benar ada
-        if not os.path.exists(driver_path):
-            raise FileNotFoundError(f"ERROR: File chromedriver.exe tidak ditemukan di: {driver_path}")
-
-        try:
-            # Menggunakan Service dengan path manual
+        if os.path.exists(driver_path):
+            self.logger.info(f"Using ChromeDriver from: {driver_path}")
             service = Service(driver_path)
             self.driver = webdriver.Chrome(service=service, options=options)
-        except Exception as e:
-            self.logger.info(f"Error WHEN start Chrome: {e}")
-            raise e
-    
+        else:
+            self.logger.warning("ChromeDriver not found in project root. Using default driver path.")
+            self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
         self.driver.maximize_window()
+        self.logger.info("Browser Opened Successfully")
 
     # 2. Logika Screenshot on Failure
     def tearDown(self):
