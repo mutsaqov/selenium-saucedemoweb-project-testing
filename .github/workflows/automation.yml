@@ -1,0 +1,49 @@
+name: Selenium Automation Tests
+
+#1. When the checker works
+on:
+  push:
+    branches: ["main"] #when push something to main
+  pull_request:
+    branches: ["main"] #when pull something from main
+
+#Task
+jobs:
+  test-selenium:
+    runs-on: ubuntu-latest
+
+    steps:
+    #get code from repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    #Setup Python
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-versionL: "3.10"
+
+    #install chrome
+    - name: Setup chrome
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+    
+    #Library Installation
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    #Running test
+    - name: Run Selenium Tests
+      run: |
+        pytest tests/test_login_page.py --html=report.html --self-contained-html
+
+    #Saving Report (Artifact Upload)
+    - name: Upload Test Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: automation-report
+        path: report.html

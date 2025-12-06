@@ -36,14 +36,18 @@ class BaseTest(unittest.TestCase):
         # Argument for turning off other features that interrupt automation
         options.add_argument("--disable-notifications")
         options.add_argument("--disable-popup-blocking")
+        options.add_argument("--headless")
+        options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-save-password-bubble")
         options.add_argument("--no-sandbox") 
         options.add_argument("--disable-dev-shm-usage") 
         options.add_argument("--disable-features=PasswordLeakDetection")
         
+        
         # Remove bar "Chrome is being controlled by automated test software"
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
+        
         
         # Mencari file chromedriver.exe di folder utama project (satu level di atas folder tests)
         current_folder = os.path.dirname(os.path.abspath(__file__)) # Folder 'tests'
