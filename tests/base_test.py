@@ -15,6 +15,7 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         #Logging setup
         self.config_logging()
+
         self.logger.info("=====================================")
         self.logger.info(f"STARTING TEST: {self._testMethodName}")
         self.logger.info("=====================================")
@@ -56,14 +57,14 @@ class BaseTest(unittest.TestCase):
 
         # Cek apakah file driver benar-benar ada
         if not os.path.exists(driver_path):
-            raise FileNotFoundError(f"ERROR: File chromedriver.exe tidak ditemukan di: {driver_path}\nPastikan Anda sudah download dan taruh file tersebut sejajar dengan folder tests!")
+            raise FileNotFoundError(f"ERROR: File chromedriver.exe tidak ditemukan di: {driver_path}")
 
         try:
             # Menggunakan Service dengan path manual
             service = Service(driver_path)
             self.driver = webdriver.Chrome(service=service, options=options)
         except Exception as e:
-            self.logger.info(f"Error saat start Chrome: {e}")
+            self.logger.info(f"Error WHEN start Chrome: {e}")
             raise e
     
         self.driver.maximize_window()
@@ -87,7 +88,7 @@ class BaseTest(unittest.TestCase):
                 self.driver.save_screenshot(file_name)
                 self.logger.info(f"!! TEST FAILED: Screenshots saved on {file_name}")
             except:
-                self.logger.info("Gagal mengambil screenshot (Browser mungkin sudah tertutup)")
+                self.logger.info("FAILED TO TAKE SCREENSHOT")
 
         try:
             self.driver.quit()
@@ -96,10 +97,16 @@ class BaseTest(unittest.TestCase):
         
     #logging function
     def config_logging(self):
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(current_dir)
+        log_folder = os.path.join(project_root, 'logs')
+
         #Creating logging folder
-        if not os.path.exists('Logs'):
-            os.makedirs('Logs')
-        
+        if not os.path.exists(log_folder):
+            os.makedirs(log_folder)
+
+        log_file_path = os.path.join(log_folder, 'automation_test.log')
         #Format log
         log_formatter = logging.Formatter("%(asctime)s - %(levelname)s = %(message)s")
         
@@ -110,7 +117,7 @@ class BaseTest(unittest.TestCase):
         #Checking handler
         if not self.logger.handlers:
             #File handler
-            file_handler = logging.FileHandler("logs/automation_test.log")
+            file_handler = logging.FileHandler(log_file_path)
             file_handler.setFormatter(log_formatter)
             self.logger.addHandler(file_handler)
             
