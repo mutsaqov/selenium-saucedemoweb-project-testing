@@ -4,7 +4,6 @@
 This project implements an exploration of Automation Testing using **Selenium** and **Python**, focusing on the **Page Object Model (POM)** architecture. The goal is to ensure the core functionalities of the SauceDemo web demo run smoothly and stably.
 
 I try to explore for CI/CD and finally now this simple project is successfully integrated with **CI/CD Pipeline (GitHub Actions)** for automated execution in the cloud.
-![CI Status](https://github.com/mutsaqov/selenium-saucedemoweb-project-testing/actions/workflows/automation.yml/badge.svg)
 
 ---
 
@@ -81,7 +80,7 @@ The project utilizes the POM architecture to separate logic and improve maintain
 
 ---
 
-##🔄 CI/CD Pipeline (GitHub Actions)
+## 🔄 CI/CD Pipeline (GitHub Actions)
 This project uses GitHub Actions to automate the testing process. The workflow is defined in `.github/workflows/automation.yml`.
 
 ### 🧠 How it works:
