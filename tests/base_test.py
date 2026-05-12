@@ -25,7 +25,7 @@ class BaseTest(unittest.TestCase):
         # 0. CHROME OPTIONS
         options = webdriver.ChromeOptions()
 
-        # Shutdown "Save Password" and "Password Leak Detection"
+        # # Shutdown "Save Password" and "Password Leak Detection"
         prefs = {
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
@@ -45,25 +45,23 @@ class BaseTest(unittest.TestCase):
         options.add_argument("--disable-dev-shm-usage") 
         options.add_argument("--disable-features=PasswordLeakDetection")
         
+        # # Remove bar "Chrome is being controlled by automated test software"
+        # options.add_experimental_option('useAutomationExtension', False)
+        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
         
-        # Remove bar "Chrome is being controlled by automated test software"
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
         
-        
-        # Mencari file chromedriver.exe di folder utama project (satu level di atas folder tests)
-        current_folder = os.path.dirname(os.path.abspath(__file__)) # Folder 'tests'
-        project_root = os.path.dirname(current_folder)              # Folder Project Utama
-        driver_path = os.path.join(project_root, "chromedriver.exe")
+        # current_folder = os.path.dirname(os.path.abspath(__file__)) # Folder 'tests'
+        # project_root = os.path.dirname(current_folder)              # Folder Project Utama
+        # driver_path = os.path.join(project_root, "chromedriver.exe")
 
-        # Cek apakah file driver benar-benar ada
-        if os.path.exists(driver_path):
-            self.logger.info(f"Using ChromeDriver from: {driver_path}")
-            service = Service(driver_path)
-            self.driver = webdriver.Chrome(service=service, options=options)
-        else:
-            self.logger.warning("ChromeDriver not found in project root. Using default driver path.")
-            self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # if os.path.exists(driver_path):
+        #     self.logger.info(f"Using ChromeDriver from: {driver_path}")
+        #     service = Service(driver_path)
+        #     self.driver = webdriver.Chrome(service=service, options=options)
+        # else:
+        #     self.logger.warning("ChromeDriver not found in project root. Using default driver path.")
+        #     self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver = webdriver.Chrome(options=options)
 
         self.driver.maximize_window()
         self.logger.info("Browser Opened Successfully")

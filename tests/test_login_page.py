@@ -3,7 +3,6 @@ from selenium import webdriver
 import pytest
 import sys
 import os
-# Trik agar Python bisa membaca folder 'pages' (kadang error path di Windows)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from pages.login_page import sauceDemoLoginPage
 from pages.inventory_page import sauceDemoInventoryPage
